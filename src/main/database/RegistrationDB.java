@@ -8,11 +8,11 @@ import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class RegistrationDB<T> implements Iterable<T>
+public class RegistrationDB<T> extends Database<T> implements Iterable<T>
 {
     private static RegistrationDB<User> userDatabase = null; //singleton pattern
     private static RegistrationDB<Ticket> ticketDatabase = null; //singleton pattern
-    private final HashMap<UUID, T> dbHashMap;
+    private final HashMap<UUID, T> dbHashMap; //template method
     private PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     private RegistrationDB()
@@ -20,7 +20,7 @@ public class RegistrationDB<T> implements Iterable<T>
         this.dbHashMap = new HashMap<>();
     }
 
-    public static RegistrationDB<User> getUserDatabase()
+    public static Database<User> getUserDatabase()
     {
         if (userDatabase==null)
         {
@@ -29,13 +29,17 @@ public class RegistrationDB<T> implements Iterable<T>
         return userDatabase;
     }
 
-    public static RegistrationDB<Ticket> getTicketDatabase()
+    public static Database<Ticket> getTicketDatabase()
     {
         if (ticketDatabase==null)
         {
             ticketDatabase = new RegistrationDB<>();
         }
         return ticketDatabase;
+    }
+
+    public HashMap<UUID, T> getDbHashMap() {
+        return dbHashMap;
     }
 
     public T getValueDBHashmap(UUID ID)
@@ -46,15 +50,16 @@ public class RegistrationDB<T> implements Iterable<T>
     public void addInDBHashMap(UUID ID, T template)
     {
         this.dbHashMap.put(ID, template);
-        support.firePropertyChange("New user", null, ID);
+        support.firePropertyChange("Add user or ticket", null, template);
     }
 
-    public void removeValueDBHashmap(UUID ID)
+    public void removeValueDBHashmap(UUID ID, T template)
     {
         if (dbHashMap.containsKey(ID))
         {
             this.dbHashMap.remove(ID);
         }
+        support.firePropertyChange("Delete user or ticket", template, null);
     }
 
     public void addPCL(PropertyChangeListener pcl)

@@ -1,13 +1,9 @@
-import controller.Controller;
+import database.Database;
 import database.RegistrationDB;
-import factories.FactoryProvider;
 import observers.DBObserver;
-import tickets.Ticket;
-import user.User;
-import tickets.EvenlySplitTicket;
+import observers.DBUserObserver;
+import observers.DBTicketObserver;
 import visual.ViewFrame;
-
-import java.beans.PropertyChangeListener;
 
 public class Main
 {
@@ -27,22 +23,11 @@ public class Main
         ViewFrame viewFrame = new ViewFrame();
         viewFrame.initialize();
 
-        RegistrationDB.getUserDatabase().addPCL(new DBObserver());
+        Database userDB = RegistrationDB.getUserDatabase();
+        Database ticketDB = RegistrationDB.getTicketDatabase();
 
-        /*Database db = RegistrationDB.getPersonAndTicketDatabase();
-        Controller controller = Controller.getController(db);
-
-        User Joris = new User("Joris");
-        User Bart = new User("Bart");
-        User Jan = new User("Jan");
-        EvenlySplitTicket ticketJoris = (EvenlySplitTicket) controller.createTicket(FactoryProvider.getEvenlySplitTicketFactory(), "Restaurant", Joris);
-
-        ticketJoris.addInvolvedPerson(Joris);
-        ticketJoris.addInvolvedPerson(Bart);
-        ticketJoris.addInvolvedPerson(Jan);
-        ticketJoris.setPrices(Joris, 18);
-
-        RegistrationDB.getPersonAndTicketDatabase().add(Joris, ticketJoris);
-        System.out.println(ticketJoris.toString());*/
+        userDB.addPCL(new DBObserver());
+        userDB.addPCL(new DBUserObserver());
+        ticketDB.addPCL(new DBTicketObserver());
     }
 }

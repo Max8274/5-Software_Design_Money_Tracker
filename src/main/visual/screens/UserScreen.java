@@ -5,10 +5,8 @@ import user.User;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class UserScreen extends JFrame //implements ActionListener
+public class UserScreen extends JFrame
 {
     private JButton confirm;
     private JTextField jTextField;
@@ -21,21 +19,20 @@ public class UserScreen extends JFrame //implements ActionListener
 
     private void initialise()
     {
-        this.setSize(300,150);
         this.confirm = new JButton("Confirm");
+        this.setSize(300,150);
+        this.setResizable(false);
         // source: http://www.nullskull.com/q/10143392/what-is-the-difference-between-form-hide-close-dispose-show-showdialog.aspx
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // source: http://www.java2s.com/Tutorial/Java/0240__Swing/ASimpleApplicationThatUsesGridBagConstraintsWEST.htm
         GridBagLayout layout = new GridBagLayout();
         this.setLayout(layout);
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
 
         JLabel label = new JLabel("Name:");
         this.add(label);
 
         this.jTextField = new JTextField(10);
-        //jTextField.addActionListener(this);
         this.add(jTextField);
 
         addConfirmButtonActionListener();
@@ -53,10 +50,4 @@ public class UserScreen extends JFrame //implements ActionListener
             this.dispose();
         });
     }
-
-    /*@Override
-    public void actionPerformed(ActionEvent e)
-    {
-
-    }*/
 }

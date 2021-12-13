@@ -1,6 +1,5 @@
 package factories;
 
-import user.User;
 import tickets.NotEvenlySplitTicket;
 import tickets.Ticket;
 

@@ -5,27 +5,32 @@ import user.User;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
-public class EvenlySplitTicketPanel extends JPanel
+public class NotEnvenlySplitTicketPanel extends JPanel
 {
-    private ArrayList<UUID> involvedUsersList;
+    private HashMap<UUID,Double> involvedUserPriceMap;
     private JList<User> userJList;
     private DefaultListModel<User> defaultListModel;
     private JButton addUsers;
     private JScrollPane scrollPane;
+    private JSpinner jSpinner;
 
-    public EvenlySplitTicketPanel()
+    public NotEnvenlySplitTicketPanel()
     {
         this.defaultListModel = new DefaultListModel<>();
-        involvedUsersList = new ArrayList<>();
+        involvedUserPriceMap = new HashMap<>();
+        // source: https://stackoverflow.com/questions/13509107/how-to-allow-only-positive-value-in-a-jspinner
+        // and https://www.codegrepper.com/code-examples/java/jspinner+only+positive+values
+        // and https://stackoverflow.com/questions/12952024/how-to-implement-infinity-in-java
+        this.jSpinner = new JSpinner(new SpinnerNumberModel(0, 0, Double.POSITIVE_INFINITY, 1));
 
         GridBagLayout layout = new GridBagLayout();
         this.setLayout(layout);
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
 
-        JLabel label = new JLabel("Add involved users (not who paid!)");
+        JLabel label = new JLabel("Add involved users (not who paid) + price to pay");
         this.add(label);
 
         RegistrationDB.getUserDatabase().forEach(defaultListModel::addElement);
@@ -36,9 +41,12 @@ public class EvenlySplitTicketPanel extends JPanel
 
         scrollPane = new JScrollPane(userJList);
         scrollPane.setPreferredSize(new Dimension(150,80));
+
+        JSplitPane jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,scrollPane,jSpinner);
+        jSplitPane.setDividerSize(0); // non-resizable
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        this.add(scrollPane,gridBagConstraints);
+        this.add(jSplitPane,gridBagConstraints);
 
         addUsers = new JButton("+");
         gridBagConstraints.gridx = 1;
@@ -48,18 +56,18 @@ public class EvenlySplitTicketPanel extends JPanel
         addUsersButtonActionListener();
     }
 
-    public ArrayList<UUID> getInvolvedUsersList()
+    public HashMap<UUID, Double> getInvolvedUserPriceMap()
     {
-        return involvedUsersList;
+        return involvedUserPriceMap;
     }
 
     public void addUsersButtonActionListener()
     {
         this.addUsers.addActionListener(listener ->
         {
-            if (!involvedUsersList.contains(userJList.getSelectedValue().getID()))
+            if (!involvedUserPriceMap.containsKey(userJList.getSelectedValue().getID()))
             {
-                involvedUsersList.add(userJList.getSelectedValue().getID());
+                involvedUserPriceMap.put(userJList.getSelectedValue().getID(), (Double) jSpinner.getValue());
             }
         });
     }

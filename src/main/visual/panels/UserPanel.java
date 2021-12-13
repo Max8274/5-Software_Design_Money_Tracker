@@ -6,22 +6,19 @@ import visual.screens.UserScreen;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 
 public class UserPanel extends JPanel implements PropertyChangeListener
 {
-    private ArrayList<User> userArrayList;
     private JList<User> userJList;
     private DefaultListModel<User> defaultListModel;
     private JButton addUser;
     private JButton removeUser;
+    private JScrollPane userScrollPane;
 
     public UserPanel()
     {
-        this.userArrayList = new ArrayList<>();
         this.defaultListModel = new DefaultListModel<>();
         this.addUser = new JButton("Add user");
         this.removeUser = new JButton("Remove user");
@@ -31,40 +28,42 @@ public class UserPanel extends JPanel implements PropertyChangeListener
 
         GridBagLayout layout = new GridBagLayout();
         this.setLayout(layout);
+        // source: http://www.java2s.com/Tutorial/Java/0240__Swing/ASimpleApplicationThatUsesGridBagConstraintsWEST.htm
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
-
-        // add every user from the UserDatabase to the userArrayList
-        RegistrationDB.getUserDatabase().forEach(userArrayList::add);
-        // source: https://www.javatpoint.com/java-jlist and http://www.java2s.com/Tutorial/Java/0240__Swing/ListSelectionModelModes.htm
-        // add every element from the userArrayList to the defaultListModel
-        // and make a userJList with it
-        this.userArrayList.forEach(defaultListModel::addElement);
-        this.userJList = new JList<>(defaultListModel);
-        this.userJList.setSelectionBackground(Color.green);
-        this.userJList.setSelectionForeground(Color.BLACK);
-        this.userJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        this.userJList.setLayoutOrientation(JList.VERTICAL);
-        //gridBagConstraints.gridx = 1;
-        //gridBagConstraints.gridy = 1;
-        this.add(userJList);
 
         // add 'Users' label
         JLabel label = new JLabel("Users");
-        //gridBagConstraints.gridx = 1;
-        //gridBagConstraints.gridy = 0;
-        this.add(label);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        this.add(label,gridBagConstraints);
 
         addUserButtonActionListener();
         addRemoveUserButtonActionListener();
 
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        this.add(addUser);
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        this.add(addUser,gridBagConstraints);
 
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
-        this.add(removeUser);
+        gridBagConstraints.gridy = 1;
+        this.add(removeUser,gridBagConstraints);
+
+        // source: https://www.javatpoint.com/java-jlist and http://www.java2s.com/Tutorial/Java/0240__Swing/ListSelectionModelModes.htm
+        // add every element from the UserDatabase to the defaultListModel
+        // and make a userJList with it
+        RegistrationDB.getUserDatabase().forEach(defaultListModel::addElement);
+        this.userJList = new JList<>(defaultListModel);
+        this.userJList.setSelectionBackground(Color.LIGHT_GRAY);
+        this.userJList.setSelectionForeground(Color.BLACK);
+        this.userJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.userScrollPane = new JScrollPane(userJList);
+        userScrollPane.setPreferredSize(new Dimension(150,80));
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        this.add(userScrollPane,gridBagConstraints);
+
         this.setBackground(Color.WHITE);
+        RegistrationDB.getUserDatabase().addPCL(this);
     }
 
     public void addUserButtonActionListener()
@@ -77,18 +76,18 @@ public class UserPanel extends JPanel implements PropertyChangeListener
     {
         this.removeUser.addActionListener(listener ->
         {
-            RegistrationDB.getUserDatabase().removeValueDBHashmap(userJList.getSelectedValue().getID());
+            if (userJList.getSelectedValue() != null)
+            {
+                RegistrationDB.getUserDatabase().removeValueDBHashmap(userJList.getSelectedValue().getID(), userJList.getSelectedValue());
+            }
         });
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        userArrayList.clear();
         defaultListModel.clear();
 
-        RegistrationDB.getUserDatabase().forEach(userArrayList::add);
-        userArrayList.forEach(defaultListModel::addElement);
-        userJList = new JList<>(defaultListModel);
+        RegistrationDB.getUserDatabase().forEach(defaultListModel::addElement);
         // source: https://stackoverflow.com/questions/24959878/does-swingutilities-updatecomponenttreeui-method-set-the-current-lf-to-all-su
         SwingUtilities.updateComponentTreeUI(this);
     }

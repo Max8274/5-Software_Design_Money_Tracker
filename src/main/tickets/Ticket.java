@@ -1,13 +1,15 @@
 package tickets;
 
+import database.RegistrationDB;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
 public abstract class Ticket
 {
-    private String typeOfTicket;
-    private UUID paidUser;
+    protected String typeOfTicket;
+    protected UUID paidUser;
     protected double paidPrice;
     protected HashMap<UUID, Double> userPriceMap;
 
@@ -58,29 +60,19 @@ public abstract class Ticket
         this.userPriceMap = userPriceMap;
     }
 
-    public void setUserPriceMap(ArrayList<UUID> involvedUsers) {}
+    public void setPriceInvolvedUsers(ArrayList<UUID> involvedUsers) {};
 
-    public void addInvolvedUser(UUID user)
-    {
-        boolean isUserInMap = false;
-        for (UUID key : userPriceMap.keySet())
-        {
-            if (key == user) {
-                isUserInMap = true;
-                break;
-            }
-        }
-        if (!isUserInMap)
-        {
-            this.userPriceMap.put(user, 0.0);
-        }
-    }
-
-    public void setPrices(UUID paidUser, Double paidPrice) {}
+    public void setPriceInvolvedUsers(HashMap<UUID,Double> involvedUserPriceMap) {};
 
     @Override
     public String toString()
     {
-        return userPriceMap.toString();
+        StringBuilder text = new StringBuilder(typeOfTicket + ": " + paidPrice + " euro paid by " + RegistrationDB.getUserDatabase().getValueDBHashmap(paidUser).getName()
+                + ". Users who need to pay: ");
+        for (UUID ID : this.userPriceMap.keySet())
+        {
+            text.append(RegistrationDB.getUserDatabase().getValueDBHashmap(ID).getName()).append(" -> ").append(this.userPriceMap.get(ID)).append(" euro  ");
+        }
+        return text.toString();
     }
 }

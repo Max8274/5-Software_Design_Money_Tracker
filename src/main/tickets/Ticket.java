@@ -11,7 +11,7 @@ public abstract class Ticket
     protected String typeOfTicket;
     protected UUID paidUser;
     protected double paidPrice;
-    protected HashMap<UUID, Double> userPriceMap;
+    protected HashMap<UUID, Double> userPriceMap; //UUID (=involved user) has to pay Double (=price) to paidUser
 
     public Ticket(String typeOfTicket, UUID paidUser)
     {
@@ -67,11 +67,11 @@ public abstract class Ticket
     @Override
     public String toString()
     {
-        StringBuilder text = new StringBuilder(typeOfTicket + ": " + paidPrice + " euro paid by " + RegistrationDB.getUserDatabase().getValueDBHashmap(paidUser).getName()
+        StringBuilder text = new StringBuilder(typeOfTicket + ": " + paidPrice + " euro paid by " + RegistrationDB.getUserDatabase().getValueDBHashmap(paidUser).get(0).getName()
                 + ". Users who need to pay: ");
         for (UUID ID : this.userPriceMap.keySet())
         {
-            text.append(RegistrationDB.getUserDatabase().getValueDBHashmap(ID).getName()).append(" -> ").append(this.userPriceMap.get(ID)).append(" euro  ");
+            text.append(RegistrationDB.getUserDatabase().getValueDBHashmap(ID).get(0).getName()).append(" -> ").append(this.userPriceMap.get(ID)).append(" euro  ");
         }
         return text.toString();
     }

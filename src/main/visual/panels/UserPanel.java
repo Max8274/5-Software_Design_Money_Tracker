@@ -1,6 +1,7 @@
 package visual.panels;
 
 import database.RegistrationDB;
+import tickets.Ticket;
 import user.User;
 import visual.screens.UserScreen;
 
@@ -8,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.UUID;
 
 public class UserPanel extends JPanel implements PropertyChangeListener
 {
@@ -66,19 +68,44 @@ public class UserPanel extends JPanel implements PropertyChangeListener
         RegistrationDB.getUserDatabase().addPCL(this);
     }
 
-    public void addUserButtonActionListener()
+    private void addUserButtonActionListener()
     {
         this.addUser.addActionListener(listener ->
                 new UserScreen());
     }
 
-    public void addRemoveUserButtonActionListener()
+    private void addRemoveUserButtonActionListener()
     {
         this.removeUser.addActionListener(listener ->
         {
+            Boolean isUserInTicket = false;
+            //go through ticket database and check if the selected user isn't connected with any ticket
+            for (UUID ID : RegistrationDB.getTicketDatabase().getDbHashMap().keySet())
+            {
+                for (Ticket ticket : RegistrationDB.getTicketDatabase().getValueDBHashmap(ID))
+                {
+                    //is the selected user an user who paid or is involved in any ticket
+                    if (userJList.getSelectedValue().getID() == ID
+                            || ticket.getUserPriceMap().containsKey(userJList.getSelectedValue().getID()))
+                    {
+                        isUserInTicket = true;
+                    }
+                }
+            }
             if (userJList.getSelectedValue() != null)
             {
-                RegistrationDB.getUserDatabase().removeValueDBHashmap(userJList.getSelectedValue().getID(), userJList.getSelectedValue());
+                if (!isUserInTicket)
+                {
+                    RegistrationDB.getUserDatabase().removeValueDBHashmap(userJList.getSelectedValue().getID(), userJList.getSelectedValue());
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "First delete ticket(s) where user is connected with!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Select user!", "Warning", JOptionPane.WARNING_MESSAGE);
             }
         });
     }
@@ -86,9 +113,7 @@ public class UserPanel extends JPanel implements PropertyChangeListener
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         defaultListModel.clear();
-
         RegistrationDB.getUserDatabase().forEach(defaultListModel::addElement);
-        // source: https://stackoverflow.com/questions/24959878/does-swingutilities-updatecomponenttreeui-method-set-the-current-lf-to-all-su
         SwingUtilities.updateComponentTreeUI(this);
     }
 }

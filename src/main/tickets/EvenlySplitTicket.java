@@ -1,7 +1,5 @@
 package tickets;
 
-import database.RegistrationDB;
-
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -18,7 +16,6 @@ public class EvenlySplitTicket extends Ticket
         userPriceMap.clear();
         for (UUID ID : involvedUsers)
         {
-            RegistrationDB.getUserDatabase().getValueDBHashmap(ID).addInUserHashmap(this.paidUser, this.paidPrice/(involvedUsers.size()+1));
             this.userPriceMap.put(ID, paidPrice/(involvedUsers.size()+1));
         }
     }

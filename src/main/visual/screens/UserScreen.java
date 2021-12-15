@@ -5,6 +5,7 @@ import user.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.UUID;
 
 public class UserScreen extends JFrame
 {
@@ -41,13 +42,36 @@ public class UserScreen extends JFrame
         this.setVisible(true);
     }
 
-    public void addConfirmButtonActionListener()
+    private void addConfirmButtonActionListener()
     {
         this.confirm.addActionListener(listener ->
         {
-            User user = new User(jTextField.getText());
-            RegistrationDB.getUserDatabase().addInDBHashMap(user.getID(),user);
-            this.dispose();
+            Boolean isSameName = false;
+            if (!jTextField.getText().isBlank())
+            {
+                for (UUID userID : RegistrationDB.getUserDatabase().getDbHashMap().keySet())
+                {
+                    if (RegistrationDB.getUserDatabase().getValueDBHashmap(userID).get(0).getName().equals(jTextField.getText()))
+                    {
+                        isSameName = true;
+                    }
+                }
+
+                if (!isSameName)
+                {
+                    User user = new User(jTextField.getText());
+                    RegistrationDB.getUserDatabase().addInDBHashMap(user.getID(), user);
+                    this.dispose();
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "This name already exists in the database. Add a last name to avoid confusion!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Fill in a complete name!", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
         });
     }
 }

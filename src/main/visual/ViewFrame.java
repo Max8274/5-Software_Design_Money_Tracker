@@ -2,6 +2,7 @@ package visual;
 
 import controller.Controller;
 import controller.RegistrationController;
+import database.RegistrationDB;
 import visual.panels.TicketPanel;
 import visual.panels.UserPanel;
 import visual.screens.CalculateScreen;
@@ -57,17 +58,21 @@ public class ViewFrame extends JFrame implements PropertyChangeListener
 
         // source: https://stackoverflow.com/questions/1081486/setting-background-color-for-a-jframe
         this.getContentPane().setBackground(Color.GRAY);
+        RegistrationDB.getUserDatabase().addPCL(this);
+        RegistrationDB.getTicketDatabase().addPCL(this);
         this.setVisible(true);
     }
 
-    public void addCalculateButtonActionListener()
+    private void addCalculateButtonActionListener()
     {
         this.calculate.addActionListener(listener ->
                 new CalculateScreen());
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        // source: https://stackoverflow.com/questions/24959878/does-swingutilities-updatecomponenttreeui-method-set-the-current-lf-to-all-su
+        SwingUtilities.updateComponentTreeUI(this);
     }
 }

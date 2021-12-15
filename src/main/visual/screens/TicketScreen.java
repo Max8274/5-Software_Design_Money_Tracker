@@ -34,7 +34,7 @@ public class TicketScreen extends JFrame
         initialise();
     }
 
-    public void initialise()
+    private void initialise()
     {
         this.defaultListModel = new DefaultListModel<>();
         // source: https://stackoverflow.com/questions/13509107/how-to-allow-only-positive-value-in-a-jspinner
@@ -105,48 +105,109 @@ public class TicketScreen extends JFrame
         this.setVisible(true);
     }
 
-    public void addEvenlySplitButtonActionListener()
+    private void addEvenlySplitButtonActionListener()
     {
         this.evenlySplit.addActionListener(listener ->
         {
-            gridBagConstraints.gridx = 0;
-            gridBagConstraints.gridy = 9;
-            evenlySplitTicketPanel = new EvenlySplitTicketPanel();
-            this.add(evenlySplitTicketPanel,gridBagConstraints);
-            isEvenlySplitTicket = true;
-            isNotEvenlySplitTicket = false;
-            SwingUtilities.updateComponentTreeUI(this);
+            if (!jTextField.getText().isBlank() && userJList.getSelectedValue() != null
+                    && (Double) jSpinner.getValue() != 0)
+            {
+                if (notEnvenlySplitTicketPanel != null)
+                {
+                    remove(notEnvenlySplitTicketPanel);
+                }
+                evenlySplitTicketPanel = new EvenlySplitTicketPanel(this.userJList.getSelectedValue());
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 9;
+                this.add(evenlySplitTicketPanel,gridBagConstraints);
+                isEvenlySplitTicket = true;
+                isNotEvenlySplitTicket = false;
+                SwingUtilities.updateComponentTreeUI(this);
+            }
+            else
+            {
+                //source: http://www.java2s.com/Code/Java/Swing-JFC/DisplaywarningmessagedialogwithJOptionPaneWARNINGMESSAGE.htm
+                JOptionPane.showMessageDialog(null, "First fill in the ticket name, select the user who paid and fill in the price the user has paid before you can continue!", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
         });
     }
 
-    public void addNotEvenlySplitButtonActionListener()
+    private void addNotEvenlySplitButtonActionListener()
     {
         this.notEvenlySplit.addActionListener(listener ->
         {
-            gridBagConstraints.gridx = 2;
-            gridBagConstraints.gridy = 9;
-            notEnvenlySplitTicketPanel = new NotEnvenlySplitTicketPanel();
-            this.add(notEnvenlySplitTicketPanel,gridBagConstraints);
-            isEvenlySplitTicket = false;
-            isNotEvenlySplitTicket = true;
-            SwingUtilities.updateComponentTreeUI(this);
+            if (!jTextField.getText().isBlank() && userJList.getSelectedValue() != null
+                && (Double) jSpinner.getValue() != 0)
+            {
+                if (evenlySplitTicketPanel != null)
+                {
+                    remove(evenlySplitTicketPanel);
+                }
+                notEnvenlySplitTicketPanel = new NotEnvenlySplitTicketPanel(this.userJList.getSelectedValue());
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 9;
+                this.add(notEnvenlySplitTicketPanel,gridBagConstraints);
+                isEvenlySplitTicket = false;
+                isNotEvenlySplitTicket = true;
+                SwingUtilities.updateComponentTreeUI(this);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "First fill in the ticket name, select the user who paid and fill in the price the user has paid before you can continue!", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
         });
     }
 
-    public void addConfirmButtonActionListener()
+    private void addConfirmButtonActionListener()
     {
         this.confirm.addActionListener(listener ->
         {
-            if (isEvenlySplitTicket)
+            if (!jTextField.getText().isBlank())
             {
-                Ticket evenlySplitTicket = controller.addEvenlySplitTicket(jTextField.getText(), userJList.getSelectedValue().getID(), (Double) jSpinner.getValue(), evenlySplitTicketPanel.getInvolvedUsersList());
+                if (userJList.getSelectedValue() != null)
+                {
+                    if ((Double) jSpinner.getValue() != 0)
+                    {
+                        if (isEvenlySplitTicket)
+                        {
+                            if (!evenlySplitTicketPanel.getInvolvedUsersList().isEmpty())
+                            {
+                                Ticket evenlySplitTicket = controller.addEvenlySplitTicket(jTextField.getText(), userJList.getSelectedValue().getID(), (Double) jSpinner.getValue(), evenlySplitTicketPanel.getInvolvedUsersList());
+                                this.dispose();
+                            }
+                            else
+                            {
+                                JOptionPane.showMessageDialog(null, "Add involved people!", "Warning", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }
+                        else if (isNotEvenlySplitTicket)
+                        {
+                            if (!notEnvenlySplitTicketPanel.getInvolvedUserPriceMap().isEmpty())
+                            {
+                                Ticket notEvenlySplitTicket = controller.addNotEvenlySplitTicket(jTextField.getText(), userJList.getSelectedValue().getID(), (Double) jSpinner.getValue(), notEnvenlySplitTicketPanel.getInvolvedUserPriceMap());
+                                this.dispose();
+                            }
+                            else
+                            {
+                                JOptionPane.showMessageDialog(null, "Add involved people!", "Warning", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        JOptionPane.showMessageDialog(null, "Fill in the price the user has paid!", "Warning", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Select an user who paid!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
             }
-            else if (isNotEvenlySplitTicket)
+            else
             {
-                Ticket notEvenlySplitTicket = controller.addNotEvenlySplitTicket(jTextField.getText(), userJList.getSelectedValue().getID(), (Double) jSpinner.getValue(), notEnvenlySplitTicketPanel.getInvolvedUserPriceMap());
+                JOptionPane.showMessageDialog(null, "Fill in a complete name!", "Warning", JOptionPane.WARNING_MESSAGE);
             }
             SwingUtilities.updateComponentTreeUI(this);
-            this.dispose();
         });
     }
 }

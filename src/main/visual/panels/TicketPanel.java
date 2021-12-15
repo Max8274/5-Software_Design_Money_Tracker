@@ -69,13 +69,13 @@ public class TicketPanel extends JPanel implements PropertyChangeListener
         RegistrationDB.getTicketDatabase().addPCL(this);
     }
 
-    public void addTicketButtonActionListener()
+    private void addTicketButtonActionListener()
     {
         this.addTicket.addActionListener(listener ->
                 new TicketScreen(controller));
     }
 
-    public void addRemoveTicketButtonActionListener()
+    private void addRemoveTicketButtonActionListener()
     {
         this.removeTicket.addActionListener(listener ->
         {
@@ -83,15 +83,17 @@ public class TicketPanel extends JPanel implements PropertyChangeListener
             {
                 RegistrationDB.getTicketDatabase().removeValueDBHashmap(ticketJList.getSelectedValue().getPaidUser(), ticketJList.getSelectedValue());
             }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Select ticket!", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
         });
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         defaultListModel.clear();
-
         RegistrationDB.getTicketDatabase().forEach(defaultListModel::addElement);
-        // source: https://stackoverflow.com/questions/24959878/does-swingutilities-updatecomponenttreeui-method-set-the-current-lf-to-all-su
         SwingUtilities.updateComponentTreeUI(this);
     }
 }

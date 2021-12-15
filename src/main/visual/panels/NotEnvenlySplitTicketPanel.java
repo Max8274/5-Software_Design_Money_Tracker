@@ -17,7 +17,7 @@ public class NotEnvenlySplitTicketPanel extends JPanel
     private JScrollPane scrollPane;
     private JSpinner jSpinner;
 
-    public NotEnvenlySplitTicketPanel()
+    public NotEnvenlySplitTicketPanel(User paidUser)
     {
         this.defaultListModel = new DefaultListModel<>();
         involvedUserPriceMap = new HashMap<>();
@@ -30,10 +30,11 @@ public class NotEnvenlySplitTicketPanel extends JPanel
         this.setLayout(layout);
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
 
-        JLabel label = new JLabel("Add involved users (not who paid) + price to pay");
+        JLabel label = new JLabel("Select user + price and add them");
         this.add(label);
 
         RegistrationDB.getUserDatabase().forEach(defaultListModel::addElement);
+        defaultListModel.removeElement(paidUser);
         userJList = new JList<>(defaultListModel);
         userJList.setSelectionBackground(Color.LIGHT_GRAY);
         userJList.setSelectionForeground(Color.BLACK);
@@ -48,7 +49,7 @@ public class NotEnvenlySplitTicketPanel extends JPanel
         gridBagConstraints.gridy = 1;
         this.add(jSplitPane,gridBagConstraints);
 
-        addUsers = new JButton("+");
+        addUsers = new JButton("Add user");
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         this.add(addUsers,gridBagConstraints);
@@ -61,13 +62,29 @@ public class NotEnvenlySplitTicketPanel extends JPanel
         return involvedUserPriceMap;
     }
 
-    public void addUsersButtonActionListener()
+    private void addUsersButtonActionListener()
     {
         this.addUsers.addActionListener(listener ->
         {
-            if (!involvedUserPriceMap.containsKey(userJList.getSelectedValue().getID()))
+            if (!involvedUserPriceMap.isEmpty())
+            {
+                if (!involvedUserPriceMap.containsKey(userJList.getSelectedValue().getID())
+                        && userJList.getSelectedValue() != null && (Double) jSpinner.getValue() != 0)
+                {
+                    involvedUserPriceMap.put(userJList.getSelectedValue().getID(), (Double) jSpinner.getValue());
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Involved user already added, no user is selected or the price to pay = 0!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+            else if (userJList.getSelectedValue() != null && (Double) jSpinner.getValue() != 0)
             {
                 involvedUserPriceMap.put(userJList.getSelectedValue().getID(), (Double) jSpinner.getValue());
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Select involved user(s), choose a price to pay bigger than 0 and add the involved user(s)!", "Warning", JOptionPane.WARNING_MESSAGE);
             }
         });
     }

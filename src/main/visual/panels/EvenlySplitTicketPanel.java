@@ -16,7 +16,7 @@ public class EvenlySplitTicketPanel extends JPanel
     private JButton addUsers;
     private JScrollPane scrollPane;
 
-    public EvenlySplitTicketPanel()
+    public EvenlySplitTicketPanel(User paidUser)
     {
         this.defaultListModel = new DefaultListModel<>();
         involvedUsersList = new ArrayList<>();
@@ -25,10 +25,11 @@ public class EvenlySplitTicketPanel extends JPanel
         this.setLayout(layout);
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
 
-        JLabel label = new JLabel("Add involved users (not who paid!)");
+        JLabel label = new JLabel("Select and add involved user(s)");
         this.add(label);
 
         RegistrationDB.getUserDatabase().forEach(defaultListModel::addElement);
+        defaultListModel.removeElement(paidUser);
         userJList = new JList<>(defaultListModel);
         userJList.setSelectionBackground(Color.LIGHT_GRAY);
         userJList.setSelectionForeground(Color.BLACK);
@@ -40,7 +41,7 @@ public class EvenlySplitTicketPanel extends JPanel
         gridBagConstraints.gridy = 1;
         this.add(scrollPane,gridBagConstraints);
 
-        addUsers = new JButton("+");
+        addUsers = new JButton("Add user");
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         this.add(addUsers,gridBagConstraints);
@@ -53,13 +54,28 @@ public class EvenlySplitTicketPanel extends JPanel
         return involvedUsersList;
     }
 
-    public void addUsersButtonActionListener()
+    private void addUsersButtonActionListener()
     {
         this.addUsers.addActionListener(listener ->
         {
-            if (!involvedUsersList.contains(userJList.getSelectedValue().getID()))
+            if (!involvedUsersList.isEmpty())
+            {
+                if (!involvedUsersList.contains(userJList.getSelectedValue().getID()) && userJList.getSelectedValue() != null)
+                {
+                    involvedUsersList.add(userJList.getSelectedValue().getID());
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Involved user already added or no user is selected!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+            else if (userJList.getSelectedValue() != null)
             {
                 involvedUsersList.add(userJList.getSelectedValue().getID());
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Select involved user(s) and add the involved user(s)!", "Warning", JOptionPane.WARNING_MESSAGE);
             }
         });
     }

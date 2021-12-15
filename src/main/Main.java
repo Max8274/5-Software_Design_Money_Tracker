@@ -1,8 +1,8 @@
 import database.Database;
 import database.RegistrationDB;
-import observers.DBObserver;
 import observers.DBUserObserver;
 import observers.DBTicketObserver;
+import observers.DBObserver;
 import visual.ViewFrame;
 
 public class Main
@@ -27,6 +27,7 @@ public class Main
         Database ticketDB = RegistrationDB.getTicketDatabase();
 
         userDB.addPCL(new DBObserver());
+        ticketDB.addPCL(new DBObserver());
         userDB.addPCL(new DBUserObserver());
         ticketDB.addPCL(new DBTicketObserver());
     }

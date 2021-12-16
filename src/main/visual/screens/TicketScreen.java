@@ -13,7 +13,7 @@ import java.awt.*;
 public class TicketScreen extends JFrame
 {
     private Controller controller;
-    private JTextField jTextField;
+    private JComboBox comboBox;
     private DefaultListModel<User> defaultListModel;
     private JList<User> userJList;
     private JScrollPane userScrollPane;
@@ -50,15 +50,17 @@ public class TicketScreen extends JFrame
         GridBagLayout layout = new GridBagLayout();
         this.setLayout(layout);
 
-        JLabel label = new JLabel("Ticket name:");
+        JLabel label = new JLabel("Type of ticket:");
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         this.add(label,gridBagConstraints);
 
-        this.jTextField = new JTextField(10);
+        // source: https://www.javatpoint.com/java-jcombobox
+        String[] ticketTypes = {"Airplane", "Restaurant", "Taxi", "Concert", "Club", "Musical", "Café"};
+        this.comboBox = new JComboBox(ticketTypes);
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
-        this.add(jTextField,gridBagConstraints);
+        this.add(comboBox,gridBagConstraints);
 
         label = new JLabel("Who has paid and which price?");
         gridBagConstraints.gridx = 1;
@@ -109,7 +111,7 @@ public class TicketScreen extends JFrame
     {
         this.evenlySplit.addActionListener(listener ->
         {
-            if (!jTextField.getText().isBlank() && userJList.getSelectedValue() != null
+            if (userJList.getSelectedValue() != null
                     && (Double) jSpinner.getValue() != 0)
             {
                 if (notEnvenlySplitTicketPanel != null)
@@ -136,7 +138,7 @@ public class TicketScreen extends JFrame
     {
         this.notEvenlySplit.addActionListener(listener ->
         {
-            if (!jTextField.getText().isBlank() && userJList.getSelectedValue() != null
+            if (userJList.getSelectedValue() != null
                 && (Double) jSpinner.getValue() != 0)
             {
                 if (evenlySplitTicketPanel != null)
@@ -162,52 +164,44 @@ public class TicketScreen extends JFrame
     {
         this.confirm.addActionListener(listener ->
         {
-            if (!jTextField.getText().isBlank())
+            if (userJList.getSelectedValue() != null)
             {
-                if (userJList.getSelectedValue() != null)
+                if ((Double) jSpinner.getValue() != 0)
                 {
-                    if ((Double) jSpinner.getValue() != 0)
+                    if (isEvenlySplitTicket)
                     {
-                        if (isEvenlySplitTicket)
+                        if (!evenlySplitTicketPanel.getInvolvedUsersList().isEmpty())
                         {
-                            if (!evenlySplitTicketPanel.getInvolvedUsersList().isEmpty())
-                            {
-                                Ticket evenlySplitTicket = controller.addEvenlySplitTicket(jTextField.getText(), userJList.getSelectedValue().getID(), (Double) jSpinner.getValue(), evenlySplitTicketPanel.getInvolvedUsersList());
-                                this.dispose();
-                            }
-                            else
-                            {
-                                JOptionPane.showMessageDialog(null, "Add involved people!", "Warning", JOptionPane.WARNING_MESSAGE);
-                            }
+                            Ticket evenlySplitTicket = controller.addEvenlySplitTicket(comboBox.getSelectedItem().toString(), userJList.getSelectedValue().getID(), (Double) jSpinner.getValue(), evenlySplitTicketPanel.getInvolvedUsersList());
+                            this.dispose();
                         }
-                        else if (isNotEvenlySplitTicket)
+                        else
                         {
-                            if (!notEnvenlySplitTicketPanel.getInvolvedUserPriceMap().isEmpty())
-                            {
-                                Ticket notEvenlySplitTicket = controller.addNotEvenlySplitTicket(jTextField.getText(), userJList.getSelectedValue().getID(), (Double) jSpinner.getValue(), notEnvenlySplitTicketPanel.getInvolvedUserPriceMap());
-                                this.dispose();
-                            }
-                            else
-                            {
-                                JOptionPane.showMessageDialog(null, "Add involved people!", "Warning", JOptionPane.WARNING_MESSAGE);
-                            }
+                            JOptionPane.showMessageDialog(null, "Add involved people!", "Warning", JOptionPane.WARNING_MESSAGE);
                         }
                     }
-                    else
+                    else if (isNotEvenlySplitTicket)
                     {
-                        JOptionPane.showMessageDialog(null, "Fill in the price the user has paid!", "Warning", JOptionPane.WARNING_MESSAGE);
+                        if (!notEnvenlySplitTicketPanel.getInvolvedUserPriceMap().isEmpty())
+                        {
+                            Ticket notEvenlySplitTicket = controller.addNotEvenlySplitTicket(comboBox.getSelectedItem().toString(), userJList.getSelectedValue().getID(), (Double) jSpinner.getValue(), notEnvenlySplitTicketPanel.getInvolvedUserPriceMap());
+                            this.dispose();
+                        }
+                        else
+                        {
+                            JOptionPane.showMessageDialog(null, "Add involved people!", "Warning", JOptionPane.WARNING_MESSAGE);
+                        }
                     }
                 }
                 else
                 {
-                    JOptionPane.showMessageDialog(null, "Select an user who paid!", "Warning", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Fill in the price the user has paid!", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
             }
             else
             {
-                JOptionPane.showMessageDialog(null, "Fill in a complete name!", "Warning", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Select an user who paid!", "Warning", JOptionPane.WARNING_MESSAGE);
             }
-            SwingUtilities.updateComponentTreeUI(this);
         });
     }
 }

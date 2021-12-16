@@ -129,7 +129,7 @@ public class TicketScreen extends JFrame
             else
             {
                 //source: http://www.java2s.com/Code/Java/Swing-JFC/DisplaywarningmessagedialogwithJOptionPaneWARNINGMESSAGE.htm
-                JOptionPane.showMessageDialog(null, "First fill in the ticket name, select the user who paid and fill in the price the user has paid before you can continue!", "Warning", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Select the user who paid and fill in the price the user has paid before you can continue!", "Warning", JOptionPane.WARNING_MESSAGE);
             }
         });
     }
@@ -155,7 +155,7 @@ public class TicketScreen extends JFrame
             }
             else
             {
-                JOptionPane.showMessageDialog(null, "First fill in the ticket name, select the user who paid and fill in the price the user has paid before you can continue!", "Warning", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Select the user who paid and fill in the price the user has paid before you can continue!", "Warning", JOptionPane.WARNING_MESSAGE);
             }
         });
     }

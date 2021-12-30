@@ -54,7 +54,11 @@ public class CalculateScreen extends JFrame implements PropertyChangeListener
         {
             for (UUID involvedUser : ticket.getUserPriceMap().keySet())
             {
-                RegistrationDB.getUserDatabase().getValueDBHashmap(involvedUser).get(0).addInUserHashmap(ticket.getPaidUser(), ticket.getUserPriceMap().get(involvedUser));
+                User user = RegistrationDB.getUserDatabase().getValueDBHashmap(involvedUser).get(0);
+                UUID paidUser = ticket.getPaidUser();
+                double paidPrice = ticket.getUserPriceMap().get(involvedUser);
+                user.addInUserHashmap(paidUser,paidPrice);
+                //RegistrationDB.getUserDatabase().getValueDBHashmap(involvedUser).get(0).addInUserHashmap(ticket.getPaidUser(), ticket.getUserPriceMap().get(involvedUser));
             }
         }
 

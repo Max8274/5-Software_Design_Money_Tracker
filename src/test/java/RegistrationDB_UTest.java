@@ -5,10 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import tickets.Ticket;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -30,7 +28,7 @@ public class RegistrationDB_UTest {
     @SuppressWarnings("unchecked")
     //test addInDBHashMap for User and Ticket
     public void t_addEntry() throws NoSuchFieldException, IllegalAccessException {
-        Field field = RegistrationDB.class.getDeclaredField("db");
+        Field field = RegistrationDB.class.getDeclaredField("dbHashMap");
         field.setAccessible(true);
 
         Database user_registrationDB_underTest = RegistrationDB.getUserDatabase();

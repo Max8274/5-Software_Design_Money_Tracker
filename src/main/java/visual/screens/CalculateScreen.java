@@ -43,23 +43,7 @@ public class CalculateScreen extends JFrame implements PropertyChangeListener
         titleLabel.setFont(new Font("Global bill",Font.BOLD,50));
         this.add(titleLabel);
 
-        RegistrationDB.getTicketDatabase().forEach(ticketList::add);
-        // clear every userHashmap and update it
-        for (Map.Entry<UUID, ArrayList<User>> entry : RegistrationDB.getUserDatabase().getDbHashMap().entrySet())
-        {
-            entry.getValue().get(0).clearUserHashMap();
-        }
-
-        for (Ticket ticket : ticketList)
-        {
-            for (UUID involvedUser : ticket.getUserPriceMap().keySet())
-            {
-                User user = RegistrationDB.getUserDatabase().getValueDBHashmap(involvedUser).get(0);
-                UUID paidUser = ticket.getPaidUser();
-                double paidPrice = ticket.getUserPriceMap().get(involvedUser);
-                user.addInUserHashmap(paidUser,paidPrice);
-            }
-        }
+        calculate();
 
         AtomicReference<JLabel> label = new AtomicReference<>();
         gridBagConstraints.gridx = 0;
@@ -87,6 +71,27 @@ public class CalculateScreen extends JFrame implements PropertyChangeListener
         RegistrationDB.getUserDatabase().addPCL(this);
         RegistrationDB.getTicketDatabase().addPCL(this);
         this.setVisible(true);
+    }
+
+    public void calculate()
+    {
+        RegistrationDB.getTicketDatabase().forEach(ticketList::add);
+        // clear every userHashmap and update it
+        for (Map.Entry<UUID, ArrayList<User>> entry : RegistrationDB.getUserDatabase().getDbHashMap().entrySet())
+        {
+            entry.getValue().get(0).clearUserHashMap();
+        }
+
+        for (Ticket ticket : ticketList)
+        {
+            for (UUID involvedUser : ticket.getUserPriceMap().keySet())
+            {
+                User user = RegistrationDB.getUserDatabase().getValueDBHashmap(involvedUser).get(0);
+                UUID paidUser = ticket.getPaidUser();
+                double paidPrice = ticket.getUserPriceMap().get(involvedUser);
+                user.addInUserHashmap(paidUser,paidPrice);
+            }
+        }
     }
 
     private void addReturnButtonActionListener()

@@ -51,18 +51,24 @@ public class RegistrationDB<T> extends Database<T> implements Iterable<T>
     public void addInDBHashMap(UUID ID, T template)
     {
         ArrayList<T> arrayList;
-        if (this.dbHashMap.containsKey(ID))
+        if (template instanceof User)
         {
-            arrayList = getValueDBHashmap(ID);
-            arrayList.add(template);
-            this.dbHashMap.put(ID, arrayList);
+            arrayList = new ArrayList<>();
         }
         else
         {
-            arrayList = new ArrayList<>();
-            arrayList.add(template);
-            this.dbHashMap.put(ID, arrayList);
+            if (this.dbHashMap.containsKey(ID))
+            {
+                arrayList = getValueDBHashmap(ID);
+            }
+            else
+            {
+                arrayList = new ArrayList<>();
+            }
         }
+        arrayList.add(template);
+        this.dbHashMap.put(ID, arrayList);
+
         support.firePropertyChange("Add user or ticket", null, template);
     }
 

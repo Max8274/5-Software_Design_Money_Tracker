@@ -14,9 +14,6 @@ public class NotEvenlySplitTicket extends Ticket
     public void setPriceInvolvedUsers(HashMap<UUID,Double> involvedUserPriceMap)
     {
         userPriceMap.clear();
-        for (UUID ID : involvedUserPriceMap.keySet())
-        {
-            this.userPriceMap.put(ID, involvedUserPriceMap.get(ID));
-        }
+        userPriceMap = involvedUserPriceMap;
     }
 }
